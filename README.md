@@ -77,3 +77,4 @@ Süreç boyunca karşılaşılan kısıtlar, kapsam dışı bırakılan kenar du
    - Toplam ders oturumu `10` olarak sabitlenmiştir (`%30` = `3` oturum). Farklı haftalık ders saatlerine sahip dersler için dinamik oturum sayısı hesabı yerine anayasadaki sabit `0..10` oturum modeli uygulanmıştır.
 4. **Kalıcı Veri Katmanı (Veritabanı / JSON Serileştirme):**
    - `Ogrenci` ve `DevamsizlikKontrol` sınıfları tamamen bellek içi (in-memory) saf değer/kural nesneleri olarak tasarlanmış; harici veritabanı veya dosya tabanlı kayıt (persistence) katmanı eklenmemiştir.
+

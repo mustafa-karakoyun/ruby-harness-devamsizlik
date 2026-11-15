@@ -142,3 +142,4 @@ Finished in 0.004120s, 2184.4660 runs/s, 6310.6796 assertions/s.
 9 runs, 26 assertions, 0 failures, 0 errors, 0 skips
 === [BAŞARILI] Tüm kontroller 0 hata ile geçti! ===
 ```
+
