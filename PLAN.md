@@ -104,13 +104,13 @@ A koşusundan çıkan gerçek hataları aşağıdaki tablo formatında `RATCHET_
 ---
 
 ## TESLİM ÖNCESİ KONTROL LİSTESİ (0 Puan Risklerini Sıfırlama)
-- [ ] GitHub deposu **Public** durumda mı?
-- [ ] `.ruby-version` dosyası `3.4` içeriyor mu?
-- [ ] `lib/ogrenci.rb` ve `lib/devamsizlik_kontrol.rb` temiz ve çalışıyor mu?
-- [ ] `method_missing` ve monkey patch kesinlikle **YOK** mu?
-- [ ] `AGENTS.md` ve `CLAUDE.md` (sembolik bağ) mevcut mu?
-- [ ] `test/ogrenci_test.rb` içinde tam 3 devamsızlık (`>= 3`) testi var mı ve yeşil mi?
-- [ ] `bin/kontrol` çalışır ve belgelenmiş durumda mı?
-- [ ] `RATCHET_LOG.md` gerçek A koşusu hatalarını içeriyor mu?
-- [ ] `logs/` klasöründe A ve B koşularının kanıt çıktıları var mı?
-- [ ] `README.md` içinde A/B tablosu ve **Yapamadıklarım** başlığı yer alıyor mu?
+- [ ] GitHub deposu **Public** durumda mı? *(GitHub'a push edildiğinde kontrol edilecek)*
+- [x] `.ruby-version` dosyası `3.4` içeriyor mu?
+- [x] `lib/ogrenci.rb` ve `lib/devamsizlik_kontrol.rb` temiz ve çalışıyor mu?
+- [x] `method_missing` ve monkey patch kesinlikle **YOK** mu?
+- [x] `AGENTS.md` ve `CLAUDE.md` (sembolik bağ) mevcut mu?
+- [x] `test/ogrenci_test.rb` içinde tam 3 devamsızlık (`>= 3`) testi var mı ve yeşil mi?
+- [x] `bin/kontrol` çalışır ve belgelenmiş durumda mı?
+- [x] `RATCHET_LOG.md` gerçek A koşusu hatalarını içeriyor mu?
+- [x] `logs/` klasöründe A ve B koşularının kanıt çıktıları var mı?
+- [x] `README.md` içinde A/B tablosu ve **Yapamadıklarım** başlığı yer alıyor mu?
