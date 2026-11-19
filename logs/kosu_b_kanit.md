@@ -42,10 +42,13 @@ Kod yazımı sonrasında Windows Sandbox (`0xC0000022`) ortamında doğrulama ve
 | 9 | 22 | `read_file` (`lib/ogrenci.rb`, `lib/devamsizlik_kontrol.rb` son kontrol) | 2.277 | 14.120 | 81 |
 | 10 | 25 | `send_message` (Üst ajana raporlama) | 3.046 | 14.348 | 666 |
 | 11 | 27 | Final yanıtı | 2.829 | 15.345 | 18 |
-| **Oturum Toplamı** | **28 Adım** | **11 Tur (Kod Üretimi: 2 Tur)** | **36.614** | **118.097** | **1.972** |
+| **Oturum Toplamı** | **28 Adım** | **11 Tur (Kod Üretimi: 2 Tur)** | **36.614** | **132.097** | **1.972** |
 
+- **Toplam Girdi Token (Uncached):** `36.614`
+- **Toplam Girdi Token (Cache Dahil Brüt):** `168.711`
+- **Toplam Çıktı Token (Output):** `1.972`
 - **Kod Üretimi Tur Sayısı:** `2` tur (A koşusundaki `7` tura kıyasla **%71,4 azalma**)
-- **Kod Üretimi Çıktı Token:** `831` token (A koşusundaki `3.510` çıktı tokenına kıyasla **%76,3 tasarruf**; tüm oturum bazında `1.972` çıktı token ile **%43,8 tasarruf**)
+- **Kod Üretimi Çıktı Token:** `831` token (A koşusunun kod üretim fazındaki (tur 1–7) `2.393` çıktı tokenına kıyasla **%65,3 tasarruf**; tüm oturum bazında `3.510` → `1.972` ile **%43,8 tasarruf**)
 - **İlk Seferde Hata Sayısı:** `0` hata (Sınır değer `>= 3`, `define_method`, `0..10` aralığı, `:onur_adayi` ve dosya ayrımı ilk turda %100 doğru üretildi).
 
 ---

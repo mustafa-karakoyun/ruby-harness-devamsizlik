@@ -88,6 +88,8 @@ class OgrenciVeDevamsizlikKontrolTest < Minitest::Test
     assert_raises(ArgumentError) { Ogrenci.new(ad: 'Test', durum: :aktif, devamsizlik: -1) }
     assert_raises(ArgumentError) { Ogrenci.new(ad: 'Test', durum: :aktif, devamsizlik: 11) }
     assert_raises(ArgumentError) { Ogrenci.new(ad: 'Test', durum: :aktif, devamsizlik: 3.5) }
+    assert_raises(ArgumentError) { Ogrenci.new(ad: 'Test', durum: :aktif, devamsizlik: 3.0) }
+    assert_raises(ArgumentError) { Ogrenci.new(ad: 'Test', durum: :aktif, devamsizlik: nil) }
   end
 
   def test_gecersiz_durum_veya_ad_argument_error_firlatir

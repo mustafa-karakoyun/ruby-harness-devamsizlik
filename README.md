@@ -17,8 +17,11 @@ Bu proje, yapay zekâ ajanlarının yazılım geliştirme süreçlerinde yaptı�
 ├── AGENTS.md                  # Ajan mühendislik anayasası (Rehber Katmanı)
 ├── CLAUDE.md -> AGENTS.md     # Sembolik bağ (120000 Git symlink)
 ├── RATCHET_LOG.md             # A koşusu hatalarından kalıcı kurallara dönüşüm tablosu
+├── .claude/
+│   └── settings.json          # PostToolUse kancası: ajan her kaydettiğinde bin/kontrol çalışır
 ├── bin/
-│   └── kontrol                # Statik analiz + Minitest doğrulama kancası (pre-commit)
+│   ├── kontrol                # Statik analiz + Minitest doğrulama kancası
+│   └── kanca_kur              # bin/kontrol'ü .git/hooks/pre-commit olarak kurar
 ├── lib/
 │   ├── ogrenci.rb             # Ogrenci veri modeli (define_method ile durum metotları)
 │   └── devamsizlik_kontrol.rb # DevamsizlikKontrol kural motoru (:kaldi, :riskli, :onur_adayi, :normal)
@@ -26,16 +29,25 @@ Bu proje, yapay zekâ ajanlarının yazılım geliştirme süreçlerinde yaptı�
 │   └── ogrenci_test.rb        # Sınır değer, özgün kural ve güvenlik birim testleri (Sensör Katmanı)
 └── logs/
     ├── kosu_a_kanit.md        # A Koşusu (Rehbersiz) transkript ve hata kanıt raporu
-    └── kosu_b_kanit.md        # B Koşusu (Harness ile) transkript ve doğrulama kanıt raporu
+    ├── kosu_b_kanit.md        # B Koşusu (Harness ile) transkript ve doğrulama kanıt raporu
+    └── kanca_kanit.md         # Kancanın kasıtlı ">" regresyonunu yakaladığını gösteren gerçek çıktı
 ```
 
 ### Doğrulama Kancasının (`./bin/kontrol`) Kullanımı
-Proje kök dizininde yer alan `./bin/kontrol` betiği hem manuel olarak hem de `.git/hooks/pre-commit` Git kancası üzerinden otomatik olarak çalışır:
+`./bin/kontrol` üç şekilde çalışır:
+
+| Tetikleyici | Ne zaman çalışır? | Nerede tanımlı? |
+|---|---|---|
+| **Ajan kancası (Claude Code `PostToolUse`)** | Ajan `Write`/`Edit` ile **her dosya kaydettiğinde** otomatik çalışır. Kontrol başarısız olursa çıkış kodu `2` döner ve hata çıktısı **doğrudan ajanın önüne** düşer; ajan düzeltmeden devam edemez. | `.claude/settings.json` (repoya dahil) |
+| **Git kancası (`pre-commit`)** | Her `git commit` öncesi çalışır; kırmızı test varsa commit reddedilir. | `.git/hooks/pre-commit` (`./bin/kanca_kur` ile kurulur) |
+| **Manuel** | İstenildiği zaman. | — |
 
 ```bash
-chmod +x bin/kontrol
-./bin/kontrol
+./bin/kanca_kur   # pre-commit kancasını kurar (klonladıktan sonra bir kez)
+./bin/kontrol     # manuel çalıştırma
 ```
+
+`.git/hooks/` klasörü Git tarafından repoya alınmadığı için kanca, sürüm kontrolündeki `bin/kanca_kur` betiğiyle kurulur. Ajan kancası ise `.claude/settings.json` ile repoyla birlikte gelir ve klonlayan herkes için kendiliğinden devreye girer.
 
 `./bin/kontrol` üç aşamalı denetim uygular:
 1. **Mimari Dosya Kontrolü:** `lib/ogrenci.rb`, `lib/devamsizlik_kontrol.rb` ve `test/ogrenci_test.rb` dosyalarının varlığını doğrular.
@@ -59,9 +71,18 @@ Detaylı ham transkript tabloları [`logs/kosu_a_kanit.md`](logs/kosu_a_kanit.md
 |---|---|---|---|
 | **Kod Üretim Tur Sayısı (Turns)** | 7 tur *(Toplam oturum: 12 tur)* | **2 tur** *(Toplam oturum: 11 tur)* | **-%71,4 azalma** (Kod üretim turlarında) |
 | **İlk Seferde Hata Sayısı** | **6 kritik hata** | **0 hata** | **%100 hata önleme** |
-| **Girdi / Çıktı Token (Kod Üretimi)** | Girdi: 20.299 / Çıktı: 2.393 | Girdi: 14.039 / **Çıktı: 831** | **-%30,8 girdi / -%65,3 çıktı token tasarrufu** |
-| **Girdi / Çıktı Token (Tüm Oturum)** | Girdi: 34.720 (Brüt: 132.427) / Çıktı: 3.510 | Girdi: 36.614 (Brüt: 154.711) / **Çıktı: 1.972** | **-%43,8 toplam çıktı token tasarrufu** |
+| **Girdi / Çıktı Token (Kod Üretimi, A: tur 1–7, B: tur 1–2)** | Girdi: 22.549 (Brüt: 67.688) / Çıktı: 2.393 | Girdi: 14.039 (Brüt: 23.843) / **Çıktı: 831** | **-%37,7 girdi (brüt -%64,8) / -%65,3 çıktı** |
+| **Girdi / Çıktı Token (Tüm Oturum)** | Girdi: 34.720 (Brüt: 132.427) / Çıktı: 3.510 | Girdi: 36.614 (Brüt: 168.711) / **Çıktı: 1.972** | **+%5,5 girdi (brüt +%27,4) / -%43,8 çıktı** |
 | **Gözlemler** | 1) Tam %30 devamsızlıkta `> 30.0` kullanarak sınır vakayı `"Geçti"` saydı (`>= 3` yerine `>` hatası).<br>2) `lib/ogrenci.rb` dosyasını oluşturmayıp iki sınıfı tek dosyada birleştirdi.<br>3) `define_method` ile `aktif?`, `donduruldu?`, `mezun?` metotlarını üretmedi.<br>4) `0..10` tam sayı oturum sınırını ve `:onur_adayi` özgün kuralını kurgulamadı. | `AGENTS.md` ve `test/ogrenci_test.rb` okunduktan sonra **ilk denemede** `lib/ogrenci.rb` ve `lib/devamsizlik_kontrol.rb` ayrımı, `define_method` kullanımı, `devamsizlik >= 3` (`:riskli`) sınır değeri ve `:onur_adayi` kuralı **0 hata** ile üretildi. | Rehber (`AGENTS.md`) + Sensör (`ogrenci_test.rb`) + Kanca (`bin/kontrol`) üçlüsü belirsizliği tamamen ortadan kaldırdı. |
+
+> **Brüt** = önbelleksiz girdi + önbellekten okunan girdi. Tüm değerler `logs/` altındaki tur tablolarının satır toplamlarıdır.
+
+### Token Analizi: Rehber girdi tokenını artırdı mı, toplamda kazandırdı mı?
+
+- **Kod üretim fazında net kazanç var.** B, rehberi ve testleri ilk turda okuduğu için ilk tur girdisi A'dan büyük (9.803'e karşı 8.513). Buna rağmen doğru kodu 2. turda yazdığı için kod üretim fazının toplam girdisi 22.549'dan 14.039'a (-%37,7), çıktısı 2.393'ten 831'e (-%65,3) düştü.
+- **Tüm oturumda girdi tokenı arttı.** B'nin toplam girdisi 34.720'den 36.614'e (+%5,5), brüt girdisi 132.427'den 168.711'e (+%27,4) çıktı. Sebep: kod 2. turda bitmesine rağmen ajan, Windows sandbox kısıtı (`0xC0000022`) yüzünden `bin/kontrol`'ü çalıştırmak için 6 tur daha harcadı (tur 3–8). Toplam tur sayısı bu yüzden yalnızca 12'den 11'e indi.
+- **Çıktı tokenı her iki ölçekte de azaldı** (tüm oturumda -%43,8). Ajan deneme-yanılma ile kod üretmek yerine kurala uygun kodu tek seferde yazdı.
+- **Sonuç:** Rehber, kod üretimini ucuzlattı ve ilk seferdeki hatayı 6'dan 0'a indirdi. Tüm oturumdaki girdi artışı rehberden değil doğrulama ortamındaki kısıttan kaynaklanıyor; sandbox engeli olmasaydı oturum 3 turda (oku → yaz → `bin/kontrol`) bitebilirdi. Bu son cümle ölçüm değil tahmindir.
 
 ---
 
