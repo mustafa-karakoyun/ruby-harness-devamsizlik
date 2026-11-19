@@ -146,3 +146,5 @@ Finished in 0.004120s, 2184.4660 runs/s, 6310.6796 assertions/s.
 === [BAŞARILI] Tüm kontroller 0 hata ile geçti! ===
 ```
 
+> **Not (assertion sayısı farkı):** Yukarıdaki çıktı B koşusu sırasında alınmıştır ve `26 assertions` gösterir. Test sayısı (`9 runs`) aynı kalmakla birlikte, `test/ogrenci_test.rb` dosyası B koşusundan sonra, repoya ilk kez commit edilmeden (`275908f`) önce mevcut testlere ek `assert`/`refute` satırları eklenerek genişletilmiştir. Bu nedenle `275908f` sürümü `9 runs, 39 assertions`, `nil` ve `3.0` girdi testlerinin eklendiği `cd8e28d` sürümü ise `9 runs, 41 assertions` verir. Güncel test dosyasıyla alınmış kanca çıktısı için bkz. [`kanca_kanit.md`](kanca_kanit.md).
+
