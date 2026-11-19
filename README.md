@@ -65,7 +65,7 @@ Aynı görev için iki izole ajan oturumu yürütülmüştür:
 - **A Koşusu (`kosu-a` dalı, Oturum `0ba648cc-e02a-45e3-8fce-7fc0b0ee2ec8`):** Hiçbir rehber (`AGENTS.md`), birim testi (`test/ogrenci_test.rb`) veya doğrulama kancası (`bin/kontrol`) olmadan `"Öğrenci devamsızlık kontrolü yap, devamsızlık sınırı %30'dur."` istemiyle çalıştırılmıştır.
 - **B Koşusu (`main` dalı, Oturum `f15fda38-6afa-4738-8a48-9617fbbe5413`):** Ratchet mekanizmasıyla oluşturulan `AGENTS.md`, `test/ogrenci_test.rb` ve `bin/kontrol` altyapısı aktifken çalıştırılmıştır.
 
-Detaylı ham transkript tabloları [`logs/kosu_a_kanit.md`](logs/kosu_a_kanit.md) ve [`logs/kosu_b_kanit.md`](logs/kosu_b_kanit.md) dosyalarında yer almaktadır.
+Transkriptlerden çıkarılan tur tur token tabloları [`logs/kosu_a_kanit.md`](logs/kosu_a_kanit.md) ve [`logs/kosu_b_kanit.md`](logs/kosu_b_kanit.md) dosyalarında yer almaktadır. A koşusunda ajanın ürettiği hatalı kodun kendisi [`kosu-a`](https://github.com/mustafa-karakoyun/ruby-harness-devamsizlik/tree/kosu-a) dalında korunmaktadır (bkz. `lib/devamsizlik_kontrol.rb:36` → `devamsizlik_orani > DEVAMSIZLIK_SINIRI_YUZDE`). Hataların tam listesi ve kalıcı kurallara dönüşümü: [`RATCHET_LOG.md`](RATCHET_LOG.md).
 
 | Metrik | A Koşusu (Rehbersiz) | B Koşusu (Harness ile) | Fark / Kazanım |
 |---|---|---|---|
@@ -96,6 +96,10 @@ Süreç boyunca karşılaşılan kısıtlar, kapsam dışı bırakılan kenar du
    - Mevcut veri modelinde `devamsizlik` alanı `0..10` aralığında tek bir tam sayı olarak modellenmiştir. Sağlık raporu veya izinli devamsızlık gibi alt kırılımlar, kural motorunun deterministik ve yalın kalması adına kapsam dışı bırakılmıştır.
 3. **Çoklu Ders ve Dönem Bazlı Kredi Ağırlıklandırması:**
    - Toplam ders oturumu `10` olarak sabitlenmiştir (`%30` = `3` oturum). Farklı haftalık ders saatlerine sahip dersler için dinamik oturum sayısı hesabı yerine anayasadaki sabit `0..10` oturum modeli uygulanmıştır.
-4. **Kalıcı Veri Katmanı (Veritabanı / JSON Serileştirme):**
+4. **Ajan kancası (`PostToolUse`) B koşusundan sonra eklendi:**
+   - B koşusu sırasında harness'te `bin/kontrol` ve `pre-commit` kancası vardı, ancak "her kaydettiğinde çalışan" `.claude/settings.json` kancası yoktu; ajan `bin/kontrol`'ü elle çağırmak zorunda kaldı. Bu kanca sonradan eklendi ve yalnızca kasıtlı regresyon simülasyonuyla doğrulandı ([`logs/kanca_kanit.md`](logs/kanca_kanit.md)); kancayla yeni bir B koşusu yapılmadı.
+5. **Ruby sürümü:**
+   - `.ruby-version` `3.4` olarak tanımlıdır, ancak yerel geliştirme makinesinde Ruby `4.0.7` kuruludur ve testler bu sürümle koşturulmuştur. Kod sürüme özgü bir özellik kullanmamaktadır; 3.4 ile ayrıca test edilmemiştir.
+6. **Kalıcı Veri Katmanı (Veritabanı / JSON Serileştirme):**
    - `Ogrenci` ve `DevamsizlikKontrol` sınıfları tamamen bellek içi (in-memory) saf değer/kural nesneleri olarak tasarlanmış; harici veritabanı veya dosya tabanlı kayıt (persistence) katmanı eklenmemiştir.
 
